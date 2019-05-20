@@ -34,9 +34,36 @@ export const removeExpense =  ({id} = {}) => ({
 });
 
 // EDIT_EXPENSE
-
 export const editExpense = (id, updates) => ({
   type: 'EDIT_EXPENSE',
     id,
-    updates
+    updates 
 });
+
+// SET_EXPENSES
+export const setExpenses = (expenses) => ({
+ type: 'SET_EXPENSES',
+ expenses
+});
+
+// 1.fetch all expense data once
+// 2.Parse that data into an array
+// 3. Dispatch SET_EXPENSES
+
+export const startSetExpenses = () => {
+   return (dispatch) => {
+     return database.ref('expenses').once('value').then((snap) => {
+       const expenses = [];
+       snap.forEach((childSnap) => {
+         expenses.push({
+           id: childSnap.key,
+           ...childSnap.val()
+         });
+       });
+
+       dispatch(setExpenses(expenses));
+     });
+   };
+};
+
+
